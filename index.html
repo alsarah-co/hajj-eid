@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تهنئة عيد الأضحى - السراة</title>
+<style>
+  @font-face {
+    font-family: 'GESSTwo';
+    src: url('GE_SS_Two_Light.otf') format('opentype');
+    font-weight: 300;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'GESSTwo', 'Tajawal', sans-serif;
+    background: linear-gradient(135deg, #1a0a0a 0%, #3d1010 50%, #1a0a0a 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .company-logo {
+    width: 110px;
+    height: auto;
+    filter: brightness(0) invert(1);
+  }
+
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 35px;
+    width: 100%;
+    max-width: 480px;
+    backdrop-filter: blur(10px);
+  }
+
+  .card-title {
+    color: #fff;
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 25px;
+  }
+
+  .input-group { margin-bottom: 20px; }
+
+  label {
+    display: block;
+    color: #ccc;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(70, 138, 154, 0.4);
+    background: rgba(255,255,255,0.07);
+    color: #468a9a;
+    font-family: 'GESSTwo', 'Tajawal', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    direction: rtl;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  input[type="text"]::placeholder { color: rgba(70, 138, 154, 0.4); }
+  input[type="text"]:focus {
+    border-color: #468a9a;
+    background: rgba(70, 138, 154, 0.08);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #468a9a, #2d6b7a);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'GESSTwo', 'Tajawal', sans-serif;
+    font-size: 17px;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.2s;
+    margin-top: 5px;
+  }
+
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .preview-section {
+    margin-top: 30px;
+    text-align: center;
+    display: none;
+  }
+
+  .preview-section.visible { display: block; }
+
+  .preview-label {
+    color: #ccc;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  #canvas-wrapper {
+    display: inline-block;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    max-width: 340px;
+    width: 100%;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .download-btn {
+    margin-top: 18px;
+    display: inline-block;
+    padding: 13px 35px;
+    background: linear-gradient(135deg, #468a9a, #2d6b7a);
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'GESSTwo', 'Tajawal', sans-serif;
+    font-size: 16px;
+    transition: opacity 0.3s;
+  }
+
+  .download-btn:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <img class="company-logo" src="logo" alt="شعار السراة">
+</div>
+
+<div class="card">
+  <div class="card-title">🎉 تهنئة عيد الأضحى المبارك</div>
+  <div class="input-group">
+    <label>اكتب اسمك</label>
+    <input type="text" id="nameInput" placeholder="الاسم هنا..." />
+  </div>
+  <button class="btn" onclick="generateCard()">✨ إنشاء بطاقة التهنئة</button>
+</div>
+
+<div class="preview-section" id="previewSection">
+  <p class="preview-label">معاينة البطاقة</p>
+  <div id="canvas-wrapper">
+    <canvas id="myCanvas"></canvas>
+  </div>
+  <br>
+  <a class="download-btn" id="downloadBtn" download="عيد_مبارك.png">⬇️ تحميل الصورة</a>
+</div>
+
+<script>
+const customFont = new FontFace('GESSTwo', "url('GE_SS_Two_Light.otf')");
+customFont.load().then(f => document.fonts.add(f)).catch(e => console.log('Font:', e));
+
+function generateCard() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) {
+    alert('من فضلك اكتب اسمك أولاً');
+    return;
+  }
+
+  const canvas = document.getElementById('myCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const templateImg = new Image();
+  templateImg.src = 'post.png';
+
+  templateImg.onload = () => {
+    canvas.width  = templateImg.naturalWidth;
+    canvas.height = templateImg.naturalHeight;
+
+    ctx.drawImage(templateImg, 0, 0);
+
+    const cx     = canvas.width / 2;
+    const nameY  = Math.round(canvas.height * 0.822);
+    const fontSize = Math.round(canvas.width * 0.038);
+
+    ctx.font         = `300 ${fontSize}px GESSTwo, Tajawal, sans-serif`;
+    ctx.fillStyle    = '#468a9a';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.direction    = 'rtl';
+    ctx.fillText(name, cx, nameY);
+
+    const dataURL = canvas.toDataURL('image/png');
+    document.getElementById('downloadBtn').href = dataURL;
+
+    document.getElementById('previewSection').classList.add('visible');
+    document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+  };
+}
+
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') generateCard();
+});
+</script>
+
+</body>
+</html>
