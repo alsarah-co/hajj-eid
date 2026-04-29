@@ -20,8 +20,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 0px 20px;
+   justify-content: flex-start;
+padding-top: 20px;
   }
 
   .page-header {
@@ -151,12 +151,12 @@
 </div>
 
 <div class="card">
-  <div class="card-title">🎉 تهنئة عيد الأضحى المبارك</div>
+  <div class="card-title"> تهنئة عيد الأضحى المبارك</div>
   <div class="input-group">
     <label>اكتب اسمك</label>
     <input type="text" id="nameInput" placeholder="الاسم هنا..." />
   </div>
-  <button class="btn" id="generateBtn" onclick="generateCard()">✨ إنشاء بطاقة التهنئة</button>
+  <button class="btn" id="generateBtn" onclick="generateCard()"> إنشاء بطاقة التهنئة</button>
 </div>
 
 <div class="preview-section" id="previewSection">
@@ -240,7 +240,7 @@
       console.error(err);
     } finally {
       btn.disabled = false;
-      btn.textContent = '✨ إنشاء بطاقة التهنئة';
+      btn.textContent = ' إنشاء بطاقة التهنئة';
     }
   }
 
