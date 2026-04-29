@@ -7,7 +7,7 @@
 <style>
   @font-face {
     font-family: 'GESSTwo';
-    src: url('GE_SS_Two_Light.otf') format('opentype');
+    src: url('GE_SS_Two_Medium.otf') format('opentype');
     font-weight: 300;
   }
 
@@ -21,12 +21,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 30px 20px;
+    padding: 0px 20px;
   }
 
   .page-header {
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
   }
 
   .company-logo {
@@ -221,7 +221,7 @@
       ctx.drawImage(img, 0, 0);
 
       const cx       = canvas.width / 2;
-      const nameY    = Math.round(canvas.height * 0.87);
+      const nameY    = Math.round(canvas.height * 0.88);
       const fontSize = Math.round(canvas.width * 0.038);
 
       ctx.font         = `300 ${fontSize}px GESSTwo, Tajawal, sans-serif`;
