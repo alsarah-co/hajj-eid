@@ -8,7 +8,7 @@
   @font-face {
     font-family: 'GESSTwo';
     src: url('GE_SS_Two_Medium.otf') format('opentype');
-    font-weight: 300;
+    font-weight: 500;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,8 +20,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-   justify-content: flex-start;
-padding-top: 20px;
+    justify-content: flex-start;
+    padding-top: 20px;
   }
 
   .page-header {
@@ -151,12 +151,12 @@ padding-top: 20px;
 </div>
 
 <div class="card">
-  <div class="card-title"> تهنئة عيد الأضحى المبارك</div>
+  <div class="card-title">تهنئة عيد الأضحى المبارك</div>
   <div class="input-group">
     <label>اكتب اسمك</label>
     <input type="text" id="nameInput" placeholder="الاسم هنا..." />
   </div>
-  <button class="btn" id="generateBtn" onclick="generateCard()"> إنشاء بطاقة التهنئة</button>
+  <button class="btn" id="generateBtn" onclick="generateCard()">إنشاء بطاقة التهنئة</button>
 </div>
 
 <div class="preview-section" id="previewSection">
@@ -169,23 +169,27 @@ padding-top: 20px;
 </div>
 
 <script>
-  // تحميل الصورة كـ blob لتجنب مشكلة CORS مع canvas
-  let templateObjectURL = null;
+  // ① تحميل الصورة والخط مرة وحدة عند فتح الصفحة
+  const templateImg = new Image();
+  let imgReady = false;
+  let fontReady = false;
 
+  // تحميل الصورة
   fetch('post.png')
     .then(r => r.blob())
     .then(blob => {
-      templateObjectURL = URL.createObjectURL(blob);
-      console.log('post.png loaded as blob ✓');
+      templateImg.src = URL.createObjectURL(blob);
+      templateImg.onload = () => { imgReady = true; };
     })
-    .catch(e => console.error('Failed to load post.png:', e));
+    .catch(e => console.error('post.png error:', e));
 
   // تحميل الخط
-  const customFont = new FontFace('GESSTwo', "url('GE_SS_Two_Light.otf')");
+  const customFont = new FontFace('GESSTwo', "url('GE_SS_Two_Medium.otf')", { weight: '500' });
   customFont.load()
-    .then(f => { document.fonts.add(f); console.log('Font loaded ✓'); })
-    .catch(e => console.log('Font fallback:', e));
+    .then(f => { document.fonts.add(f); fontReady = true; })
+    .catch(() => { fontReady = true; }); // fallback بدون خط مخصص
 
+  // ② عند الضغط على الزر - مباشر بدون تحميل إضافي
   async function generateCard() {
     const name = document.getElementById('nameInput').value.trim();
     if (!name) {
@@ -198,33 +202,27 @@ padding-top: 20px;
     btn.textContent = '⏳ جاري الإنشاء...';
 
     try {
-      // إذا الـ blob لم يتحمل بعد، نحمله الآن
-      if (!templateObjectURL) {
-        const r = await fetch('post.png');
-        const blob = await r.blob();
-        templateObjectURL = URL.createObjectURL(blob);
+      // انتظر الصورة لو لم تكتمل بعد (أول مرة فقط)
+      if (!imgReady) {
+        await new Promise((resolve, reject) => {
+          templateImg.onload = () => { imgReady = true; resolve(); };
+          templateImg.onerror = reject;
+          setTimeout(reject, 15000); // timeout 15 ثانية
+        });
       }
-
-      const img = new Image();
-      img.src = templateObjectURL;
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
 
       const canvas = document.getElementById('myCanvas');
       const ctx = canvas.getContext('2d');
 
-      canvas.width  = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      ctx.drawImage(img, 0, 0);
+      canvas.width  = templateImg.naturalWidth;
+      canvas.height = templateImg.naturalHeight;
+      ctx.drawImage(templateImg, 0, 0);
 
       const cx       = canvas.width / 2;
       const nameY    = Math.round(canvas.height * 0.88);
       const fontSize = Math.round(canvas.width * 0.038);
 
-      ctx.font         = `300 ${fontSize}px GESSTwo, Tajawal, sans-serif`;
+      ctx.font         = `500 ${fontSize}px GESSTwo, Tajawal, sans-serif`;
       ctx.fillStyle    = '#468a9a';
       ctx.textAlign    = 'center';
       ctx.textBaseline = 'middle';
@@ -236,11 +234,11 @@ padding-top: 20px;
       document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
 
     } catch (err) {
-      alert('حدث خطأ، تأكد أن ملف post.png موجود في نفس المجلد');
+      alert('تعذّر تحميل الصورة، تأكد من اتصال الإنترنت وأعد المحاولة');
       console.error(err);
     } finally {
       btn.disabled = false;
-      btn.textContent = ' إنشاء بطاقة التهنئة';
+      btn.textContent = 'إنشاء بطاقة التهنئة';
     }
   }
 
